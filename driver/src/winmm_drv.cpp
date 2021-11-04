@@ -291,6 +291,7 @@ LONG CloseDriver(Driver *driver, UINT uDeviceID, UINT uMsg, DWORD_PTR dwUser, DW
 }
 
 STDAPI_(DWORD) modMessage(DWORD uDeviceID, DWORD uMsg, DWORD_PTR dwUser, DWORD_PTR dwParam1, DWORD_PTR dwParam2) {
+	MIDIHDR *midiHdr;
 	Driver *driver = &drivers[uDeviceID];
 	DWORD instance;
 	switch (uMsg) {
@@ -311,6 +312,7 @@ STDAPI_(DWORD) modMessage(DWORD uDeviceID, DWORD uMsg, DWORD_PTR dwUser, DWORD_P
 		}
 		if (synthOpened) {
 			synth->midi_reset();
+			synth->midi_close();
 		}
 		return CloseDriver(driver, uDeviceID, uMsg, dwUser, dwParam1, dwParam2);
 
@@ -337,7 +339,18 @@ STDAPI_(DWORD) modMessage(DWORD uDeviceID, DWORD uMsg, DWORD_PTR dwUser, DWORD_P
 		return MMSYSERR_NOERROR;
 
 	case MODM_LONGDATA:
-		return MMSYSERR_NOTSUPPORTED;
+		if (driver->clients[dwUser].allocated == false) {
+			return MMSYSERR_ERROR;
+		}
+		midiHdr = (MIDIHDR *)dwParam1;
+		if ((midiHdr->dwFlags & MHDR_PREPARED) == 0) {
+			return MIDIERR_UNPREPARED;
+		}
+		synth->midi_write_sysex((char*)midiHdr->lpData, midiHdr->dwBufferLength);
+		midiHdr->dwFlags |= MHDR_DONE;
+		midiHdr->dwFlags &= ~MHDR_INQUEUE;
+		DoCallback(uDeviceID, dwUser, MOM_DONE, dwParam1, (DWORD_PTR)NULL);
+		return MMSYSERR_NOERROR;
 
 	case MODM_GETNUMDEVS:
 		return 0x1;
