@@ -419,6 +419,7 @@ int OPL3MIDI::midi_init()
 {
     uint32_t i;
 
+    OPL_Hardware_Detection();
     OPL_HW_Init();
 
     opl_opl3mode = true;
