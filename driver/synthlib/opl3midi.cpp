@@ -547,6 +547,15 @@ void OPL3MIDI::midi_write(unsigned int data)
     }
 }
 
+void OPL3MIDI::midi_write_sysex(char *buffer, unsigned int length)
+{
+    const unsigned char resetArray[6] = {0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7};
+    if (length == 6 && memcmp(&resetArray[0], buffer, 6) == 0)
+    {
+        midi_reset();
+    }
+}
+
 void OPL3MIDI::midi_panic()
 {
     for (int c = 0; c < 16; ++c)
@@ -567,6 +576,10 @@ void OPL3MIDI::midi_reset()
         opl_channels[i].pan = 0xff;
         opl_channels[i].sustained = false;
     }
+}
+
+void OPL3MIDI::midi_close() {
+    OPL_HW_Close();
 }
 
 midisynth *getsynth() {

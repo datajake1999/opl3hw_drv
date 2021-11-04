@@ -123,6 +123,8 @@ private:
 public:
     int midi_init();
     void midi_write(unsigned int data);
+    void midi_write_sysex(char *buffer, unsigned int length);
     void midi_panic();
     void midi_reset();
+    void midi_close();
 };
