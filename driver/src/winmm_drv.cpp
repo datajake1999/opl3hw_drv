@@ -313,6 +313,7 @@ STDAPI_(DWORD) modMessage(DWORD uDeviceID, DWORD uMsg, DWORD_PTR dwUser, DWORD_P
 		if (synthOpened) {
 			synth->midi_reset();
 			synth->midi_close();
+			synthOpened = false;
 		}
 		return CloseDriver(driver, uDeviceID, uMsg, dwUser, dwParam1, dwParam2);
 
