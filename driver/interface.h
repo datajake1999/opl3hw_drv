@@ -20,6 +20,8 @@ public:
 	virtual void midi_panic() = 0;
 	virtual void midi_reset() = 0;
 	virtual void midi_close() = 0;
+	virtual const char *midi_synthname(void) = 0;
+	virtual int midi_getprogram(unsigned int channel) = 0;
 };
 
 midisynth* getsynth();
