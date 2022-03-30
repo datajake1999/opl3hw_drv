@@ -347,7 +347,7 @@ STDAPI_(DWORD) modMessage(DWORD uDeviceID, DWORD uMsg, DWORD_PTR dwUser, DWORD_P
 		if ((midiHdr->dwFlags & MHDR_PREPARED) == 0) {
 			return MIDIERR_UNPREPARED;
 		}
-		synth->midi_write_sysex((char*)midiHdr->lpData, midiHdr->dwBufferLength);
+		synth->midi_write_sysex((unsigned char*)midiHdr->lpData, midiHdr->dwBufferLength);
 		midiHdr->dwFlags |= MHDR_DONE;
 		midiHdr->dwFlags &= ~MHDR_INQUEUE;
 		DoCallback(uDeviceID, dwUser, MOM_DONE, dwParam1, (DWORD_PTR)NULL);
